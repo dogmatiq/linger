@@ -5,6 +5,7 @@ import (
 
 	. "github.com/dogmatiq/linger"
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 )
 
@@ -79,3 +80,34 @@ var _ = Describe("func Latest()", func() {
 		Expect(t).To(Equal(time.Time{}))
 	})
 })
+
+var _ = DescribeTable(
+	"func Limit()",
+	func(in, out time.Duration) {
+		a := 20 * time.Second
+		b := 30 * time.Second
+		Expect(Limit(in, a, b)).To(Equal(out))
+		Expect(Limit(in, b, a)).To(Equal(out))
+	},
+	Entry("limit to min", 15*time.Second, 20*time.Second),
+	Entry("limit to max", 35*time.Second, 30*time.Second),
+	Entry("do not limit", 25*time.Second, 25*time.Second),
+)
+
+var _ = DescribeTable(
+	"func LimitT()",
+	func(in, out time.Duration) {
+		now := time.Now()
+
+		a := now.Add(20 * time.Second)
+		b := now.Add(30 * time.Second)
+		inT := now.Add(in)
+		outT := now.Add(out)
+
+		Expect(LimitT(inT, a, b)).To(Equal(outT))
+		Expect(LimitT(inT, b, a)).To(Equal(outT))
+	},
+	Entry("limit to min", 15*time.Second, 20*time.Second),
+	Entry("limit to max", 35*time.Second, 30*time.Second),
+	Entry("do not limit", 25*time.Second, 25*time.Second),
+)
