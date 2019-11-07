@@ -15,9 +15,10 @@ var _ = Describe("func Coalesce()", func() {
 		Expect(v).To(Equal(1 * time.Second))
 	})
 
-	It("returns false if no values are positive", func() {
-		_, ok := Coalesce(0*time.Second, -1*time.Second)
+	It("returns the zero-value and false if no values are positive", func() {
+		v, ok := Coalesce(0*time.Second, -1*time.Second)
 		Expect(ok).To(BeFalse())
+		Expect(v).To(Equal(0 * time.Second))
 	})
 })
 
@@ -44,9 +45,10 @@ var _ = Describe("func CoalesceT()", func() {
 		Expect(v).To(BeTemporally("==", epoch))
 	})
 
-	It("returns false if no values match", func() {
-		_, ok := CoalesceT(time.Time{})
+	It("returns the zero-value and false if no values match", func() {
+		v, ok := CoalesceT(time.Time{})
 		Expect(ok).To(BeFalse())
+		Expect(v).To(Equal(time.Time{}))
 	})
 })
 
