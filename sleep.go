@@ -12,7 +12,7 @@ import (
 // are positive.
 //
 // It sleeps until the duration elapses or ctx is canceled, whichever is first.
-// If ctx is canceled before the duration elapses it returns ctx.Done(),
+// If ctx is canceled before the duration elapses it returns ctx.Err(),
 // otherwise it returns nil.
 func Sleep(ctx context.Context, durations ...time.Duration) error {
 	return SleepX(ctx, Identity, durations...)
@@ -29,7 +29,7 @@ func Sleep(ctx context.Context, durations ...time.Duration) error {
 // ProportionalJitter().
 //
 // It sleeps until the duration elapses or ctx is canceled, whichever is first.
-// If ctx is canceled before the duration elapses it returns ctx.Done(),
+// If ctx is canceled before the duration elapses it returns ctx.Err(),
 // otherwise it returns nil.
 func SleepX(
 	ctx context.Context,
@@ -47,7 +47,7 @@ func SleepX(
 // times is in the past.
 //
 // It sleeps until the time is reached or ctx is canceled, whichever is first.
-// If ctx is canceled before the time is reached it returns ctx.Done(),
+// If ctx is canceled before the time is reached it returns ctx.Err(),
 // otherwise it returns nil.
 func SleepUntil(ctx context.Context, times ...time.Time) error {
 	return SleepUntilX(ctx, Identity, times...)
@@ -64,7 +64,7 @@ func SleepUntil(ctx context.Context, times ...time.Time) error {
 // ProportionalJitter().
 //
 // It sleeps until the time is reached or ctx is canceled, whichever is first.
-// If ctx is canceled before the time is reached it returns ctx.Done(),
+// If ctx is canceled before the time is reached it returns ctx.Err(),
 // otherwise it returns nil.
 func SleepUntilX(
 	ctx context.Context,
