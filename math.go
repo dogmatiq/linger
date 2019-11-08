@@ -84,3 +84,37 @@ func Latest(times ...time.Time) time.Time {
 
 	return max
 }
+
+// Limit returns the duration d, capped between a and b, inclusive.
+func Limit(d, a, b time.Duration) time.Duration {
+	if b < a {
+		a, b = b, a
+	}
+
+	if d < a {
+		return a
+	}
+
+	if d > b {
+		return b
+	}
+
+	return d
+}
+
+// LimitT returns the time t, capped between a and b, inclusive.
+func LimitT(t, a, b time.Time) time.Time {
+	if b.Before(a) {
+		a, b = b, a
+	}
+
+	if t.Before(a) {
+		return a
+	}
+
+	if t.After(b) {
+		return b
+	}
+
+	return t
+}
