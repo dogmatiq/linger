@@ -17,7 +17,7 @@ func FromContextDeadline(ctx context.Context) (d time.Duration, ok bool) {
 	return 0, false
 }
 
-// ContextWithTimeout returns a content with a deadline some duration after the
+// ContextWithTimeout returns a context with a deadline some duration after the
 // current time.
 //
 // The timeout duration is computed by finding the first of the supplied
@@ -30,7 +30,7 @@ func ContextWithTimeout(
 	return ContextWithTimeoutX(ctx, Identity, durations...)
 }
 
-// ContextWithTimeoutX returns a content with a deadline some duration after the
+// ContextWithTimeoutX returns a context with a deadline some duration after the
 // current time.
 //
 // The timeout duration is computed by finding the first of the supplied
