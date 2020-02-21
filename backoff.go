@@ -41,7 +41,7 @@ type Backoff struct {
 	// with Max it is used to produce the "bounded wait duration".
 	Min time.Duration
 
-	// Min is an upper bound for the "transformed wait duration", in combination
+	// Max is an upper bound for the "transformed wait duration", in combination
 	// with Min it is used to produce the "bounded wait duration".
 	Max time.Duration
 
