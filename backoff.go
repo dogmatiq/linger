@@ -23,8 +23,8 @@ type BackoffStrategy func(n int, err error) time.Duration
 // that the operation is expensive.
 var DefaultBackoffStrategy BackoffStrategy = ExponentialBackoff(3 * time.Second)
 
-// Backoff introduces delays between atempts to perform some application-defined
-// operation.
+// Backoff introduces delays between attempts to perform some
+// application-defined operation.
 type Backoff struct {
 	// Strategy is the backoff strategy used to compute the "fundamental wait
 	// duration". If it is nil, DefaultBackoffStrategy is used.
@@ -41,7 +41,7 @@ type Backoff struct {
 	// with Max it is used to produce the "bounded wait duration".
 	Min time.Duration
 
-	// Min is a upper bound for the "transformed wait duration", in combination
+	// Min is an upper bound for the "transformed wait duration", in combination
 	// with Min it is used to produce the "bounded wait duration".
 	Max time.Duration
 
@@ -82,8 +82,8 @@ func (b *Backoff) Fail(err error) time.Duration {
 	return d
 }
 
-// Sleep marks the most recent attempt and pauses the current goroutine until
-// the "bounded wait duration" has elapsed.
+// Sleep marks the most recent attempt as a failure and pauses the current
+// goroutine until the "bounded wait duration" has elapsed.
 //
 // It sleeps until the duration elapses or ctx is canceled, whichever is first.
 // If ctx is canceled before the duration elapses it returns ctx.Err(),
