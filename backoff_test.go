@@ -9,12 +9,19 @@ import (
 )
 
 var _ = Describe("type Backoff", func() {
-	var backoff *Backoff
+	var (
+		config  *BackoffConfig
+		backoff *Backoff
+	)
 
 	BeforeEach(func() {
-		backoff = &Backoff{
+		config = &BackoffConfig{
 			Strategy:  LinearBackoff(10 * time.Millisecond),
 			Transform: Identity,
+		}
+
+		backoff = &Backoff{
+			Config: config,
 		}
 	})
 
@@ -29,13 +36,24 @@ var _ = Describe("type Backoff", func() {
 	})
 
 	Describe("func Fail()", func() {
+		It("uses the default configuration", func() {
+			backoff.Config = nil
+
+			// The default configuration uses FullJitter, so this is hard to
+			// test well, but essentially we're ensuring it doesn't panic.
+
+			Expect(backoff.Fail(nil)).To(BeNumerically("<=", 3*time.Second))
+			Expect(backoff.Fail(nil)).To(BeNumerically("<=", 6*time.Second))
+			Expect(backoff.Fail(nil)).To(BeNumerically("<=", 12*time.Second))
+		})
+
 		It("uses the backoff strategy", func() {
 			Expect(backoff.Fail(nil)).To(Equal(10 * time.Millisecond))
 			Expect(backoff.Fail(nil)).To(Equal(20 * time.Millisecond))
 		})
 
 		It("uses the default backoff strategy if none is specified", func() {
-			backoff.Strategy = nil
+			config.Strategy = nil
 
 			Expect(backoff.Fail(nil)).To(Equal(3 * time.Second))
 			Expect(backoff.Fail(nil)).To(Equal(6 * time.Second))
@@ -43,7 +61,7 @@ var _ = Describe("type Backoff", func() {
 		})
 
 		It("applies the transform", func() {
-			backoff.Transform = func(d time.Duration) time.Duration {
+			config.Transform = func(d time.Duration) time.Duration {
 				return d * 2
 			}
 
@@ -52,7 +70,7 @@ var _ = Describe("type Backoff", func() {
 		})
 
 		It("uses a full-jitter transform by default", func() {
-			backoff.Transform = nil
+			config.Transform = nil
 
 			for attempts := 0; attempts < 10000; attempts++ {
 				backoff.Ok()
@@ -72,7 +90,7 @@ var _ = Describe("type Backoff", func() {
 		})
 
 		It("respects the lower bound", func() {
-			backoff.Min = 25 * time.Millisecond
+			config.Min = 25 * time.Millisecond
 
 			Expect(backoff.Fail(nil)).To(Equal(25 * time.Millisecond))
 			Expect(backoff.Fail(nil)).To(Equal(25 * time.Millisecond))
@@ -80,7 +98,7 @@ var _ = Describe("type Backoff", func() {
 		})
 
 		It("respects the upper bound", func() {
-			backoff.Max = 15 * time.Millisecond
+			config.Max = 15 * time.Millisecond
 
 			Expect(backoff.Fail(nil)).To(Equal(10 * time.Millisecond))
 			Expect(backoff.Fail(nil)).To(Equal(15 * time.Millisecond))
@@ -88,7 +106,7 @@ var _ = Describe("type Backoff", func() {
 		})
 
 		It("uses a default upper bound of one hour", func() {
-			backoff.Strategy = LinearBackoff(25 * time.Minute)
+			config.Strategy = LinearBackoff(25 * time.Minute)
 
 			Expect(backoff.Fail(nil)).To(Equal(25 * time.Minute))
 			Expect(backoff.Fail(nil)).To(Equal(50 * time.Minute))
@@ -96,8 +114,8 @@ var _ = Describe("type Backoff", func() {
 		})
 
 		It("checks the lower bound after the transform", func() {
-			backoff.Min = 25 * time.Millisecond
-			backoff.Transform = func(d time.Duration) time.Duration {
+			config.Min = 25 * time.Millisecond
+			config.Transform = func(d time.Duration) time.Duration {
 				return d * 2
 			}
 
@@ -106,8 +124,8 @@ var _ = Describe("type Backoff", func() {
 		})
 
 		It("checks the upper bound after the transform", func() {
-			backoff.Max = 25 * time.Millisecond
-			backoff.Transform = func(d time.Duration) time.Duration {
+			config.Max = 25 * time.Millisecond
+			config.Transform = func(d time.Duration) time.Duration {
 				return d * 2
 			}
 

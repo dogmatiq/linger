@@ -17,15 +17,15 @@ import (
 // does not indicate a success.
 type BackoffStrategy func(n int, err error) time.Duration
 
-// DefaultBackoffStrategy is the default strategy used by Backoff.
+// DefaultBackoffStrategy is the default strategy used if none is specified.
 //
 // It is a conservative policy favouring large delay times under the assumption
 // that the operation is expensive.
 var DefaultBackoffStrategy BackoffStrategy = ExponentialBackoff(3 * time.Second)
 
-// Backoff introduces delays between attempts to perform some
-// application-defined operation.
-type Backoff struct {
+// BackoffConfig encapsulates configuration describing how an operation should
+// be "backed off" after a failure.
+type BackoffConfig struct {
 	// Strategy is the backoff strategy used to compute the "fundamental wait
 	// duration". If it is nil, DefaultBackoffStrategy is used.
 	Strategy BackoffStrategy
@@ -44,9 +44,21 @@ type Backoff struct {
 	// Max is an upper bound for the "transformed wait duration", in combination
 	// with Min it is used to produce the "bounded wait duration".
 	Max time.Duration
+}
+
+// DefaultBackoffConfig is the default backoff configuration used if none is
+// specified.
+var DefaultBackoffConfig = &BackoffConfig{}
+
+// Backoff introduces delays between attempts to perform some
+// application-defined operation.
+type Backoff struct {
+	// Config is the configuration for the backoff. If it is nil,
+	// DefaultBackoffConfig is used.
+	Config *BackoffConfig
 
 	// failures is the number of successive failures that have occurred.
-	failures uint32
+	failures uint32 // atomic
 }
 
 // Ok marks the most recent attempt as a success.
@@ -60,15 +72,20 @@ func (b *Backoff) Ok() {
 // err is the error describing the operation's failure, if known. A nil error
 // does not indicate a success.
 func (b *Backoff) Fail(err error) time.Duration {
-	min := Longest(b.Min, 0)
-	max := MustCoalesce(b.Max, 1*time.Hour)
+	cfg := b.Config
+	if cfg == nil {
+		cfg = DefaultBackoffConfig
+	}
 
-	strategy := b.Strategy
+	min := Longest(cfg.Min, 0)
+	max := MustCoalesce(cfg.Max, 1*time.Hour)
+
+	strategy := cfg.Strategy
 	if strategy == nil {
 		strategy = DefaultBackoffStrategy
 	}
 
-	transform := b.Transform
+	transform := cfg.Transform
 	if transform == nil {
 		transform = FullJitter
 	}
