@@ -29,3 +29,12 @@ func CoalesceT(values ...time.Time) (v time.Time, ok bool) {
 func MustCoalesceT(values ...time.Time) time.Time {
 	return MustFirstT(NonZeroT, values...)
 }
+
+// Coalescer returns a DurationTransform that returns the first value positive
+// value. The transform input value is checked first, then each of the given
+// values.
+//
+// It panics if none of the values are positive.
+func Coalescer(values ...time.Duration) DurationTransform {
+	return Defaulter(Positive, values...)
+}

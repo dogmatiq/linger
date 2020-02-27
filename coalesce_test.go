@@ -56,14 +56,32 @@ var _ = Describe("func MustCoalesceT()", func() {
 	epoch := time.Unix(0, 0)
 	now := time.Now()
 
-	It("returns the first value that matches the predicate", func() {
+	It("returns the first non-zero value", func() {
 		v := MustCoalesceT(time.Time{}, epoch, now)
 		Expect(v).To(BeTemporally("==", epoch))
 	})
 
-	It("panics if no values match", func() {
+	It("panics if no values are non-zero", func() {
 		Expect(func() {
 			MustCoalesceT(time.Time{})
+		}).To(Panic())
+	})
+})
+
+var _ = Describe("func Coalescer()", func() {
+	It("returns the first positive value", func() {
+		v := Coalescer(-1*time.Second, 1*time.Second)(0 * time.Second)
+		Expect(v).To(Equal(1 * time.Second))
+	})
+
+	It("returns the input value if it is positive", func() {
+		v := Coalescer(-1*time.Second, 1*time.Second)(5 * time.Second)
+		Expect(v).To(Equal(5 * time.Second))
+	})
+
+	It("panics if no values are positive", func() {
+		Expect(func() {
+			Coalescer(-1 * time.Second)(0 * time.Second)
 		}).To(Panic())
 	})
 })
