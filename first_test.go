@@ -65,3 +65,21 @@ var _ = Describe("func MustFirstT()", func() {
 		}).To(Panic())
 	})
 })
+
+var _ = Describe("func Defaulter()", func() {
+	It("returns the first value that matches the predicate", func() {
+		v := Defaulter(Positive, -1*time.Second, 1*time.Second)(0 * time.Second)
+		Expect(v).To(Equal(1 * time.Second))
+	})
+
+	It("returns the input value if it matches the predicate", func() {
+		v := Defaulter(Positive, -1*time.Second, 1*time.Second)(5 * time.Second)
+		Expect(v).To(Equal(5 * time.Second))
+	})
+
+	It("panics if no values match", func() {
+		Expect(func() {
+			Defaulter(Positive, -1*time.Second)(0 * time.Second)
+		}).To(Panic())
+	})
+})

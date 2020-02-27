@@ -53,3 +53,18 @@ func MustFirstT(p TimePredicate, values ...time.Time) time.Time {
 
 	panic("the predicate did not match any input values")
 }
+
+// Defaulter returns a DurationTransform that returns the first value for which
+// the predicate function p returns true. The transform input value is checked
+// first, then each of the given values.
+//
+// It panics if p returns false for all values.
+func Defaulter(p DurationPredicate, values ...time.Duration) DurationTransform {
+	return func(v time.Duration) time.Duration {
+		if p(v) {
+			return v
+		}
+
+		return MustFirst(p, values...)
+	}
+}
