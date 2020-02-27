@@ -16,9 +16,23 @@ var _ = Describe("func Multiply()", func() {
 	})
 })
 
+var _ = Describe("func Multiplier()", func() {
+	It("multiplies the input duration", func() {
+		d := Multiplier(1.5)(10 * time.Second)
+		Expect(d).To(Equal(15 * time.Second))
+	})
+})
+
 var _ = Describe("func Divide()", func() {
 	It("returns the expected quotient", func() {
 		d := Divide(15*time.Second, 1.5)
+		Expect(d).To(Equal(10 * time.Second))
+	})
+})
+
+var _ = Describe("func Divider()", func() {
+	It("divides the input duration", func() {
+		d := Divider(1.5)(15 * time.Second)
 		Expect(d).To(Equal(10 * time.Second))
 	})
 })
@@ -88,6 +102,20 @@ var _ = DescribeTable(
 		b := 30 * time.Second
 		Expect(Limit(in, a, b)).To(Equal(out))
 		Expect(Limit(in, b, a)).To(Equal(out))
+	},
+	Entry("limit to min", 15*time.Second, 20*time.Second),
+	Entry("limit to max", 35*time.Second, 30*time.Second),
+	Entry("do not limit", 25*time.Second, 25*time.Second),
+)
+
+var _ = DescribeTable(
+	"func Limiter()",
+	func(in, out time.Duration) {
+		a := 20 * time.Second
+		b := 30 * time.Second
+		x := Limiter(a, b)
+		Expect(x(in)).To(Equal(out))
+		Expect(x(in)).To(Equal(out))
 	},
 	Entry("limit to min", 15*time.Second, 20*time.Second),
 	Entry("limit to max", 35*time.Second, 30*time.Second),
