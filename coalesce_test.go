@@ -23,12 +23,12 @@ var _ = Describe("func Coalesce()", func() {
 })
 
 var _ = Describe("func MustCoalesce()", func() {
-	It("returns the first value that matches the predicate", func() {
+	It("returns the first positive value", func() {
 		v := MustCoalesce(0*time.Second, -1*time.Second, 1*time.Second, 2*time.Second)
 		Expect(v).To(Equal(1 * time.Second))
 	})
 
-	It("panics if no values match", func() {
+	It("panics if no values are positive", func() {
 		Expect(func() {
 			MustCoalesce(0*time.Second, -1*time.Second)
 		}).To(Panic())
@@ -39,13 +39,13 @@ var _ = Describe("func CoalesceT()", func() {
 	epoch := time.Unix(0, 0)
 	now := time.Now()
 
-	It("returns the first value that matches the predicate", func() {
+	It("returns the first non-zero value", func() {
 		v, ok := CoalesceT(time.Time{}, epoch, now)
 		Expect(ok).To(BeTrue())
 		Expect(v).To(BeTemporally("==", epoch))
 	})
 
-	It("returns the zero-value and false if no values match", func() {
+	It("returns the zero-value and false if no values are non-zero", func() {
 		v, ok := CoalesceT(time.Time{})
 		Expect(ok).To(BeFalse())
 		Expect(v).To(Equal(time.Time{}))
