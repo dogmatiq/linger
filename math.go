@@ -20,9 +20,23 @@ func Multiply(d time.Duration, v float64) time.Duration {
 	return FromSeconds(d.Seconds() * v)
 }
 
+// Multiplier returns a DurationTransform that multiplies the input duration by v.
+func Multiplier(v float64) DurationTransform {
+	return func(d time.Duration) time.Duration {
+		return Multiply(d, v)
+	}
+}
+
 // Divide returns the result of dividing d by v.
 func Divide(d time.Duration, v float64) time.Duration {
 	return FromSeconds(d.Seconds() / v)
+}
+
+// Divider returns a DurationTransform that divides the input duration by v.
+func Divider(v float64) DurationTransform {
+	return func(d time.Duration) time.Duration {
+		return Divide(d, v)
+	}
 }
 
 // Shortest returns the smallest of the given durations.
@@ -100,6 +114,14 @@ func Limit(d, a, b time.Duration) time.Duration {
 	}
 
 	return d
+}
+
+// Limiter returns a DurationTransform that limits the input duration
+// between a and b, inclusive.
+func Limiter(a, b time.Duration) DurationTransform {
+	return func(d time.Duration) time.Duration {
+		return Limit(d, a, b)
+	}
 }
 
 // LimitT returns the time t, capped between a and b, inclusive.
