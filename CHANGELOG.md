@@ -11,9 +11,14 @@ The format is based on [Keep a Changelog], and this project adheres to
 
 ## [Unreleased]
 
-## Changed
+## Added
 
-- **[BC]** Move configuration properties from `Backoff` into new `BackoffConfig` struct
+- Add `backoff.Retry()`
+
+### Changed
+
+- **[BC]** Moved `BackoffStrategy` to `backoff.Strategy`, note that the signature has also changed
+- **[BC]** Moved `Backoff` to `backoff.Counter`, note that all options are now specified by the strategy
 
 ## [0.1.1] - 2020-02-24
 
