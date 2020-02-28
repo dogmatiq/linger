@@ -20,11 +20,12 @@ var DefaultStrategy Strategy = WithTransforms(
 // Strategy is a function for computing delays between attempts to perform some
 // application-defined operation.
 //
-// n is the number of successive failures since the last success.
-//
 // err is the error describing the operation's failure, if known. A nil error
 // does not indicate a success.
-type Strategy func(n int, err error) time.Duration
+//
+// n is the number of successive failures since the last success, not including
+// the failure indicated by err.
+type Strategy func(err error, n uint) time.Duration
 
 // Exponential returns a Strategy that uses binary exponential backoff (BEB).
 //
@@ -36,8 +37,8 @@ func Exponential(unit time.Duration) Strategy {
 
 	u := unit.Seconds()
 
-	return func(n int, _ error) time.Duration {
-		scale := math.Pow(2, float64(n-1))
+	return func(_ error, n uint) time.Duration {
+		scale := math.Pow(2, float64(n))
 		seconds := u * scale
 
 		return linger.FromSeconds(seconds)
@@ -46,7 +47,7 @@ func Exponential(unit time.Duration) Strategy {
 
 // Constant returns a Strategy that returns a fixed wait duration.
 func Constant(d time.Duration) Strategy {
-	return func(_ int, _ error) time.Duration {
+	return func(error, uint) time.Duration {
 		return d
 	}
 }
@@ -55,16 +56,16 @@ func Constant(d time.Duration) Strategy {
 //
 // The unit delay is multiplied by the number of successive failures.
 func Linear(unit time.Duration) Strategy {
-	return func(n int, _ error) time.Duration {
-		return time.Duration(n) * unit
+	return func(_ error, n uint) time.Duration {
+		return time.Duration(n+1) * unit
 	}
 }
 
 // WithTransforms returns a strategy that transforms the result of s using each
 // of the given transforms in order.
 func WithTransforms(s Strategy, transforms ...linger.DurationTransform) Strategy {
-	return func(n int, err error) time.Duration {
-		d := s(n, err)
+	return func(err error, n uint) time.Duration {
+		d := s(err, n)
 
 		for _, x := range transforms {
 			d = x(d)
