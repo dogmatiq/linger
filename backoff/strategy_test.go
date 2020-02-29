@@ -39,7 +39,7 @@ var _ = Describe("func Constant()", func() {
 })
 
 var _ = Describe("func Linear()", func() {
-	It("returns a strategy that returns a fixed duration", func() {
+	It("returns a strategy that returns a linearly increasing duration", func() {
 		strategy := Linear(3 * time.Second)
 
 		Expect(strategy(nil, 4)).To(Equal(15 * time.Second))
