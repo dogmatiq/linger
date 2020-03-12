@@ -12,7 +12,7 @@ import (
 // introduce delays between retries.
 type Counter struct {
 	// Strategy is used to calculate the delay duration.
-	// If it is nil, DefaultBackoffConfig is used.
+	// If it is nil, DefaultStrategy is used.
 	Strategy Strategy
 
 	// failures is the number of successive failures that have occurred.

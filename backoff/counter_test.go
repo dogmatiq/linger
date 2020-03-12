@@ -37,7 +37,7 @@ var _ = Describe("type Counter", func() {
 		It("uses the default strategy if none is specified", func() {
 			counter.Strategy = nil
 
-			// The default configuration uses FullJitter, so this is hard to
+			// The default strategy uses FullJitter, so this is hard to
 			// test well, but essentially we're ensuring it doesn't panic.
 
 			Expect(counter.Fail(nil)).To(BeNumerically("<=", 3*time.Second))
