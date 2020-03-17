@@ -40,7 +40,6 @@ func Exponential(unit time.Duration) Strategy {
 	return func(_ error, n uint) time.Duration {
 		scale := math.Pow(2, float64(n))
 		seconds := u * scale
-
 		return linger.FromSeconds(seconds)
 	}
 }

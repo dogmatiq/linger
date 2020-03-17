@@ -1,8 +1,9 @@
-package linger
+package linger_test
 
 import (
 	"time"
 
+	. "github.com/dogmatiq/linger"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

@@ -1,9 +1,10 @@
-package backoff
+package backoff_test
 
 import (
 	"time"
 
 	"github.com/dogmatiq/linger"
+	. "github.com/dogmatiq/linger/backoff"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
