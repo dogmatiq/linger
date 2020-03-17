@@ -1,6 +1,7 @@
 package backoff_test
 
 import (
+	"math"
 	"time"
 
 	"github.com/dogmatiq/linger"
@@ -32,8 +33,14 @@ var _ = Describe("func Exponential()", func() {
 	It("does not overflow the time.Duration type", func() {
 		strategy := Exponential(1)
 
-		Expect(strategy(nil, 62)).To(Equal(time.Duration(4611686018427387904)))
+		// No overflow at 2^62. We have 63-bits of positive magnitude available
+		// because time.Duration is a signed 64-bit integer.
+		Expect(strategy(nil, 62)).To(Equal(time.Duration(math.Pow(2, 62))))
+
+		// Starts overflowing at 2^63.
 		Expect(strategy(nil, 63)).To(Equal(linger.MaxDuration))
+
+		// Continues to return the capped value as the exponent increases.
 		Expect(strategy(nil, 100)).To(Equal(linger.MaxDuration))
 	})
 
@@ -69,12 +76,21 @@ var _ = Describe("func Linear()", func() {
 	})
 
 	It("does not overflow the time.Duration type", func() {
-		strategy := Linear(linger.MaxDuration / 2)
+		unit := linger.MaxDuration - 1
 
-		Expect(strategy(nil, 0)).To(Equal(linger.MaxDuration / 2))
-		Expect(strategy(nil, 1)).To(Equal(linger.MaxDuration - 1))
-		Expect(strategy(nil, 2)).To(Equal(linger.MaxDuration))
-		Expect(strategy(nil, 3)).To(Equal(linger.MaxDuration))
+		strategy := Linear(unit)
+
+		// No overflow at 1 * unit, as it's slightly below the max.
+		Expect(strategy(nil, 0)).To(Equal(unit))
+
+		// Start overflowing at 2 * unit. Overflow is detected because the
+		// result of the multiplication wraps negative.
+		Expect(unit * 2).To(BeNumerically("<", 0)) // verify test inputs actually wrap
+		Expect(strategy(nil, 1)).To(Equal(linger.MaxDuration))
+
+		// Continue overflowing. Overflow is detected because the result of the
+		// multiplication wraps negative, and continues on to be positive again.
+		Expect(unit * 5).To(BeNumerically(">", 0)) // verify test inputs actually wrap
 		Expect(strategy(nil, 4)).To(Equal(linger.MaxDuration))
 	})
 })

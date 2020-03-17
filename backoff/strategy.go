@@ -70,7 +70,7 @@ func Linear(unit time.Duration) Strategy {
 		delay := mult * unit
 
 		// Overflow check: If delay is negative, there was clearly an overflow
-		// because both n and mult are positive.
+		// because both unit and mult are positive.
 		if delay < 0 {
 			return linger.MaxDuration
 		}
