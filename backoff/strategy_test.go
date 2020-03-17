@@ -28,6 +28,15 @@ var _ = Describe("func Exponential()", func() {
 			Exponential(-1)
 		}).To(Panic())
 	})
+
+	It("does not overflow the time.Duration type", func() {
+		strategy := Exponential(1)
+
+		Expect(strategy(nil, 62)).To(Equal(time.Duration(4611686018427387904)))
+		Expect(strategy(nil, 63)).To(Equal(linger.MaxDuration))
+		Expect(strategy(nil, 100)).To(Equal(linger.MaxDuration))
+	})
+
 })
 
 var _ = Describe("func Constant()", func() {
@@ -45,6 +54,28 @@ var _ = Describe("func Linear()", func() {
 
 		Expect(strategy(nil, 4)).To(Equal(15 * time.Second))
 		Expect(strategy(nil, 5)).To(Equal(18 * time.Second))
+	})
+
+	It("panics if the unit is zero", func() {
+		Expect(func() {
+			Linear(0)
+		}).To(Panic())
+	})
+
+	It("panics if the unit is negative", func() {
+		Expect(func() {
+			Linear(-1)
+		}).To(Panic())
+	})
+
+	It("does not overflow the time.Duration type", func() {
+		strategy := Linear(linger.MaxDuration / 2)
+
+		Expect(strategy(nil, 0)).To(Equal(linger.MaxDuration / 2))
+		Expect(strategy(nil, 1)).To(Equal(linger.MaxDuration - 1))
+		Expect(strategy(nil, 2)).To(Equal(linger.MaxDuration))
+		Expect(strategy(nil, 3)).To(Equal(linger.MaxDuration))
+		Expect(strategy(nil, 4)).To(Equal(linger.MaxDuration))
 	})
 })
 
