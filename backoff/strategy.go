@@ -35,12 +35,18 @@ func Exponential(unit time.Duration) Strategy {
 		panic("the unit duration must be postive")
 	}
 
-	u := unit.Seconds()
+	u := float64(unit)
 
 	return func(_ error, n uint) time.Duration {
 		scale := math.Pow(2, float64(n))
-		seconds := u * scale
-		return linger.FromSeconds(seconds)
+		nanos := u * scale
+
+		// Overflow check.
+		if nanos >= float64(linger.MaxDuration) {
+			return linger.MaxDuration
+		}
+
+		return time.Duration(nanos)
 	}
 }
 
@@ -55,8 +61,27 @@ func Constant(d time.Duration) Strategy {
 //
 // The unit delay is multiplied by the number of successive failures.
 func Linear(unit time.Duration) Strategy {
+	if unit <= 0 {
+		panic("the unit duration must be postive")
+	}
+
 	return func(_ error, n uint) time.Duration {
-		return time.Duration(n+1) * unit
+		mult := time.Duration(n) + 1
+		delay := mult * unit
+
+		// Overflow check: If delay is negative, there was clearly an overflow
+		// because both unit and mult are positive.
+		if delay < 0 {
+			return linger.MaxDuration
+		}
+
+		// Overflow check: Dividing the delay by the unit value should give us
+		// back the multiplier that we used. If not, there was an overflow.
+		if delay/unit != mult {
+			return linger.MaxDuration
+		}
+
+		return delay
 	}
 }
 
