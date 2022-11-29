@@ -46,4 +46,24 @@ var _ = Describe("func Retry()", func() {
 		Expect(err).To(Equal(context.DeadlineExceeded))
 		Expect(n).To(BeNumerically("==", 1))
 	})
+
+	It("uses the default strategy if none is provided", func() {
+		count := 0
+
+		n, err := Retry(
+			context.Background(),
+			nil,
+			func(context.Context) error {
+				if count == 1 {
+					return nil
+				}
+
+				count++
+				return errors.New("<error>")
+			},
+		)
+
+		Expect(err).ShouldNot(HaveOccurred())
+		Expect(n).To(BeNumerically("==", 1))
+	})
 })

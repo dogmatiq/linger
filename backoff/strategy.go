@@ -11,7 +11,7 @@ import (
 //
 // It is a conservative policy favouring large delay times under the assumption
 // that the operation is expensive.
-var DefaultStrategy Strategy = WithTransforms(
+var DefaultStrategy = WithTransforms(
 	Exponential(3*time.Second),
 	linger.FullJitter,
 	linger.Limiter(0, 1*time.Hour),
@@ -32,7 +32,7 @@ type Strategy func(err error, n uint) time.Duration
 // The unit delay is doubled after each successive failure.
 func Exponential(unit time.Duration) Strategy {
 	if unit <= 0 {
-		panic("the unit duration must be postive")
+		panic("the unit duration must be positive")
 	}
 
 	u := float64(unit)
