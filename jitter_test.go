@@ -42,4 +42,23 @@ var _ = Describe("func Rand()", func() {
 		Expect(d).To(BeNumerically(">=", 1*time.Second))
 		Expect(d).To(BeNumerically("<=", 100*time.Second))
 	})
+
+	It("returns the value when the arguments are equal", func() {
+		d := Rand(100*time.Second, 100*time.Second)
+		Expect(d).To(Equal(100 * time.Second))
+	})
+
+	// See https://github.com/dogmatiq/linger/issues/18
+	It("supports MaxDuration", func() {
+		d := Rand(0, MaxDuration)
+		Expect(d).To(BeNumerically(">=", 0))
+		Expect(d).To(BeNumerically("<=", MaxDuration))
+
+		d = Rand(MaxDuration, 0)
+		Expect(d).To(BeNumerically(">=", 0))
+		Expect(d).To(BeNumerically("<=", MaxDuration))
+
+		d = Rand(MaxDuration, MaxDuration)
+		Expect(d).To(Equal(MaxDuration))
+	})
 })

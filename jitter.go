@@ -1,6 +1,7 @@
 package linger
 
 import (
+	"math"
 	"math/rand"
 	"time"
 )
@@ -37,9 +38,25 @@ func Rand(a, b time.Duration) time.Duration {
 		a, b = b, a
 	}
 
-	min := int64(a)
-	max := int64(b) + 1
-	r := min + rand.Int63n(max-min)
+	diff := int64(b - a)
 
-	return time.Duration(r)
+	return a + time.Duration(
+		inclusiveRand(diff),
+	)
+}
+
+// inclusiveRand returns a positive unsigned integer less than or equal to n.
+func inclusiveRand(n int64) int64 {
+	if n == 0 {
+		return 0
+	}
+
+	// If n is equal to the maximum value of an int64 we can't use rand.Int63n()
+	// because it uses a half-open range. As a work-around, we produce a random
+	// unsigned integer and discard the sign bit.
+	if n == math.MaxInt64 {
+		return int64(rand.Uint64() & math.MaxInt64)
+	}
+
+	return rand.Int63n(n + 1)
 }
