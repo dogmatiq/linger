@@ -108,3 +108,41 @@ var _ = Describe("func WithTransform()", func() {
 		Expect(s(nil, 2)).To(Equal(25 * time.Second))
 	})
 })
+
+var _ = Describe("func CoalesceStrategy()", func() {
+	It("returns a strategy that yields the first positive duration", func() {
+
+		stgyOne := func(_ error, n uint) time.Duration {
+			if n == 1 {
+				return 6 * time.Second
+			}
+			return 0
+		}
+
+		stgyTwo := func(_ error, n uint) time.Duration {
+			if n == 2 {
+				return 9 * time.Second
+			}
+			return 0
+		}
+
+		s := CoalesceStrategy(
+			stgyOne,
+			stgyTwo,
+		)
+
+		sC := CoalesceStrategy(
+			s,
+			Constant(3*time.Second),
+		)
+
+		Expect(s(nil, 0)).To(Equal(0 * time.Second))
+		Expect(s(nil, 1)).To(Equal(6 * time.Second))
+		Expect(s(nil, 2)).To(Equal(9 * time.Second))
+
+		Expect(sC(nil, 0)).To(Equal(3 * time.Second))
+		Expect(sC(nil, 1)).To(Equal(6 * time.Second))
+		Expect(sC(nil, 2)).To(Equal(9 * time.Second))
+
+	})
+})

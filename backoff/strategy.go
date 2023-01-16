@@ -98,3 +98,24 @@ func WithTransforms(s Strategy, transforms ...linger.DurationTransform) Strategy
 		return d
 	}
 }
+
+// CoalesceStrategy returns a strategy that iterates over the given strategies
+// and runs them, returning the first positive duration.
+func CoalesceStrategy(strategies ...Strategy) Strategy {
+	return FirstStrategy(linger.Positive, strategies...)
+}
+
+// FirstStrategy returns a strategy that iterates over the given strategies
+// and runs them, returning the first duration which satisfies the predicate.
+// Return zero if no duration satisfies the predicate.
+func FirstStrategy(p linger.DurationPredicate, strategies ...Strategy) Strategy {
+	return func(e error, n uint) time.Duration {
+		for _, s := range strategies {
+			d := s(e, n)
+			if p(d) {
+				return d
+			}
+		}
+		return 0
+	}
+}
