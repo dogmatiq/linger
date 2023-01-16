@@ -10,11 +10,11 @@ The format is based on [Keep a Changelog], and this project adheres to
 [keep a changelog]: https://keepachangelog.com/en/1.0.0/
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
-## [Unreleased] - 2023-01-16
+## [1.1.0] - 2023-01-17
 
 ### Added
 
-- Add `FirstStrategy` and `CoalesceStrategy`
+- Add `FirstStrategy` and `CoalesceStrategy` (thanks [@pmallela])
 
 ## [1.0.0] - 2022-11-29
 
@@ -64,6 +64,10 @@ The format is based on [Keep a Changelog], and this project adheres to
 [0.2.1]: https://github.com/dogmatiq/linger/releases/tag/v0.2.1
 [0.2.2]: https://github.com/dogmatiq/linger/releases/tag/v0.2.2
 [1.0.0]: https://github.com/dogmatiq/linger/releases/tag/v1.0.0
+
+<!-- outside contributors -->
+
+[@pmallela]: https://github.com/pmallela
 
 <!-- version template
 ## [0.0.1] - YYYY-MM-DD
