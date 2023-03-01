@@ -1,9 +1,12 @@
+<div align="center">
+
 # Linger
 
-[![Build Status](https://github.com/dogmatiq/linger/workflows/CI/badge.svg)](https://github.com/dogmatiq/linger/actions?workflow=CI)
-[![Code Coverage](https://img.shields.io/codecov/c/github/dogmatiq/linger/master.svg)](https://codecov.io/github/dogmatiq/linger)
-[![Latest Version](https://img.shields.io/github/tag/dogmatiq/linger.svg?label=semver)](https://semver.org)
-[![Documentation](https://img.shields.io/badge/go.dev-reference-007d9c)](https://pkg.go.dev/github.com/dogmatiq/linger)
-[![Go Report Card](https://goreportcard.com/badge/github.com/dogmatiq/linger)](https://goreportcard.com/report/github.com/dogmatiq/linger)
+Timeout and retry utilities for Go.
 
-Linger is a set of timeout and retry utilities for Go.
+[![Documentation](https://img.shields.io/badge/go.dev-documentation-007d9c?&style=for-the-badge)](https://pkg.go.dev/github.com/dogmatiq/linger)
+[![Latest Version](https://img.shields.io/github/tag/dogmatiq/linger.svg?&style=for-the-badge&label=semver)](https://github.com/dogmatiq/linger/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/dogmatiq/linger/ci.yml?style=for-the-badge&branch=main)](https://github.com/dogmatiq/linger/actions/workflows/ci.yml)
+[![Code Coverage](https://img.shields.io/codecov/c/github/dogmatiq/linger/main.svg?style=for-the-badge)](https://codecov.io/github/dogmatiq/linger)
+
+</div>
