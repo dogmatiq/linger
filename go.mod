@@ -1,6 +1,6 @@
 module github.com/dogmatiq/linger
 
-go 1.21
+go 1.22
 
 require (
 	github.com/onsi/ginkgo v1.16.5
